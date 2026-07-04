@@ -5,3 +5,8 @@
 ```sh
 ls docs/ -l
 ```
+
+- <https://hashin.net/loading-test-sample-html/size-10b.html>
+- <https://hashin.net/loading-test-sample-html/size-1kb.html>
+- <https://hashin.net/loading-test-sample-html/size-1mb.html>
+- <https://hashin.net/loading-test-sample-html/sample.html>
