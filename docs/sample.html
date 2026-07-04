@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="スクレイピングツールのテスト用サンプルページ" />
+    <meta name="keywords" content="scraping, test, sample, html" />
+    <meta name="author" content="hashin2425" />
+    <meta property="og:title" content="Scraping Test Sample" />
+    <meta property="og:description" content="スクレイピングツールのテスト用サンプルページ" />
+    <meta property="og:type" content="website" />
+    <title>Scraping Test Sample | loading-test-sample</title>
+    <script type="application/ld+json">
+      {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Scraping Test Sample",
+          "description": "スクレイピングツールのテスト用サンプルページ",
+          "author": {
+              "@type": "Person",
+              "name": "hashin2425"
+          }
+      }
+    </script>
+  </head>
+  <body>
+    <!-- ナビゲーション -->
+    <nav id="main-nav" class="navbar" role="navigation" aria-label="main navigation">
+      <a href="/" class="nav-brand">Home</a>
+      <ul class="nav-links">
+        <li><a href="#section-text" class="nav-item">Text</a></li>
+        <li><a href="#section-table" class="nav-item">Table</a></li>
+        <li><a href="#section-list" class="nav-item">List</a></li>
+        <li><a href="#section-form" class="nav-item">Form</a></li>
+        <li><a href="#section-media" class="nav-item">Media</a></li>
+        <li><a href="#section-nested" class="nav-item active" aria-current="page">Nested</a></li>
+      </ul>
+    </nav>
+
+    <main id="main-content">
+      <!-- ヘッダー -->
+      <header class="page-header" data-section="header">
+        <h1 class="page-title">スクレイピングテスト用サンプルページ</h1>
+        <p class="page-subtitle">このページはWebスクレイピングツールの動作検証用に作成されています。</p>
+        <time datetime="2026-07-04" class="publish-date">公開日: 2026年7月4日</time>
+      </header>
+
+      <!-- テキストセクション -->
+      <section id="section-text" class="section" data-type="text">
+        <h2>テキストコンテンツ</h2>
+
+        <article class="article" id="article-1" data-id="1" data-category="news">
+          <h3 class="article-title">見出し: テスト記事タイトル1</h3>
+          <p class="article-body">
+            本文テキスト: これはスクレイピングツールのテスト用本文です。
+            <strong>太字テキスト</strong>や<em>イタリックテキスト</em>、 <a href="https://example.com/article/1" class="external-link" rel="noopener">外部リンク</a>、 <span class="highlight" style="color: red;">インラインスタイル付きテキスト</span>が含まれています。
+          </p>
+          <p class="article-meta">著者: <span class="author" itemprop="author">テスト太郎</span> | カテゴリ: <span class="category">ニュース</span> | タグ: <span class="tag">tag-a</span>, <span class="tag">tag-b</span>, <span class="tag">tag-c</span></p>
+        </article>
+
+        <article class="article" id="article-2" data-id="2" data-category="tech">
+          <h3 class="article-title">見出し: テスト記事タイトル2</h3>
+          <blockquote cite="https://example.com/quote">
+            <p>これは引用ブロックです。スクレイピング時に引用要素が正しく認識されるかテストします。</p>
+            <footer>— 引用元: <cite>テストドキュメント</cite></footer>
+          </blockquote>
+          <pre><code class="language-python">
+# コードブロック内のテキスト
+def scrape_test():
+    return {"status": "ok", "value": 42}
+            </code></pre>
+        </article>
+      </section>
+
+      <!-- テーブルセクション -->
+      <section id="section-table" class="section" data-type="table">
+        <h2>テーブルデータ</h2>
+
+        <table class="data-table" id="product-table" summary="商品一覧テーブル">
+          <caption>
+            商品一覧 (テストデータ)
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col" data-col="id">ID</th>
+              <th scope="col" data-col="name">商品名</th>
+              <th scope="col" data-col="price">価格</th>
+              <th scope="col" data-col="stock">在庫</th>
+              <th scope="col" data-col="category">カテゴリ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row-odd" data-row-id="101">
+              <td class="cell-id">101</td>
+              <td class="cell-name"><a href="/products/101">テスト商品 Alpha</a></td>
+              <td class="cell-price" data-price="1980">¥1,980</td>
+              <td class="cell-stock in-stock">在庫あり</td>
+              <td class="cell-category">カテゴリA</td>
+            </tr>
+            <tr class="row-even" data-row-id="102">
+              <td class="cell-id">102</td>
+              <td class="cell-name"><a href="/products/102">テスト商品 Beta</a></td>
+              <td class="cell-price" data-price="5500">¥5,500</td>
+              <td class="cell-stock out-of-stock">在庫なし</td>
+              <td class="cell-category">カテゴリB</td>
+            </tr>
+            <tr class="row-odd" data-row-id="103">
+              <td class="cell-id">103</td>
+              <td class="cell-name"><a href="/products/103">テスト商品 Gamma</a></td>
+              <td class="cell-price" data-price="320">¥320</td>
+              <td class="cell-stock in-stock">在庫あり</td>
+              <td class="cell-category">カテゴリA</td>
+            </tr>
+            <tr class="row-even" data-row-id="104">
+              <td class="cell-id">104</td>
+              <td class="cell-name"><a href="/products/104">テスト商品 Delta</a></td>
+              <td class="cell-price" data-price="12800">¥12,800</td>
+              <td class="cell-stock in-stock">在庫あり</td>
+              <td class="cell-category">カテゴリC</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="5" class="table-footer">合計4件の商品</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- ネストされたテーブル -->
+        <table class="nested-table">
+          <tr>
+            <th>外側セルA</th>
+            <td>
+              <table class="inner-table">
+                <tr>
+                  <td>内側セル 1-1</td>
+                  <td>内側セル 1-2</td>
+                </tr>
+                <tr>
+                  <td>内側セル 2-1</td>
+                  <td>内側セル 2-2</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </section>
+
+      <!-- リストセクション -->
+      <section id="section-list" class="section" data-type="list">
+        <h2>リスト構造</h2>
+
+        <h3>順序なしリスト (ul)</h3>
+        <ul class="unordered-list" id="ul-test">
+          <li class="list-item" data-item="1">アイテム 1: <a href="/item/1">リンク付きアイテム</a></li>
+          <li class="list-item" data-item="2">アイテム 2: テキストのみ</li>
+          <li class="list-item" data-item="3">
+            アイテム 3: ネストされたリスト
+            <ul class="nested-list">
+              <li>ネスト level 2 - A</li>
+              <li>
+                ネスト level 2 - B
+                <ul>
+                  <li>ネスト level 3 - X</li>
+                  <li>ネスト level 3 - Y</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li class="list-item" data-item="4">アイテム 4: <strong>太字</strong>と<em>イタリック</em>混在</li>
+        </ul>
+
+        <h3>順序付きリスト (ol)</h3>
+        <ol class="ordered-list" id="ol-test" start="1">
+          <li value="1">手順 1: 最初のステップ</li>
+          <li value="2">手順 2: 次のステップ</li>
+          <li value="3">手順 3: 最後のステップ</li>
+        </ol>
+
+        <h3>定義リスト (dl)</h3>
+        <dl class="definition-list" id="dl-test">
+          <dt class="term">用語A</dt>
+          <dd class="definition">用語Aの定義テキスト。スクレイピングで dt/dd ペアを正しく取得できるかテストします。</dd>
+          <dt class="term">用語B</dt>
+          <dd class="definition">用語Bの定義テキスト (1つ目)</dd>
+          <dd class="definition">用語Bの定義テキスト (2つ目)</dd>
+        </dl>
+      </section>
+
+      <!-- フォームセクション -->
+      <section id="section-form" class="section" data-type="form">
+        <h2>フォーム要素</h2>
+
+        <form id="test-form" action="/submit" method="POST" class="test-form" enctype="application/x-www-form-urlencoded">
+          <fieldset>
+            <legend>基本入力フィールド</legend>
+
+            <div class="form-group">
+              <label for="input-text">テキスト入力:</label>
+              <input type="text" id="input-text" name="text_field" value="デフォルト値" placeholder="テキストを入力" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+              <label for="input-email">メールアドレス:</label>
+              <input type="email" id="input-email" name="email_field" placeholder="example@test.com" class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label for="input-number">数値:</label>
+              <input type="number" id="input-number" name="number_field" value="42" min="0" max="100" step="1" />
+            </div>
+
+            <div class="form-group">
+              <label for="select-field">セレクトボックス:</label>
+              <select id="select-field" name="select_field" class="form-select">
+                <option value="">選択してください</option>
+                <option value="opt-a" selected>オプション A</option>
+                <option value="opt-b">オプション B</option>
+                <option value="opt-c" disabled>オプション C (無効)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>ラジオボタン:</label>
+              <label><input type="radio" name="radio_field" value="radio-1" checked /> ラジオ 1</label>
+              <label><input type="radio" name="radio_field" value="radio-2" /> ラジオ 2</label>
+              <label><input type="radio" name="radio_field" value="radio-3" /> ラジオ 3</label>
+            </div>
+
+            <div class="form-group">
+              <label>チェックボックス:</label>
+              <label><input type="checkbox" name="check_a" value="a" checked /> チェック A</label>
+              <label><input type="checkbox" name="check_b" value="b" /> チェック B</label>
+              <label><input type="checkbox" name="check_c" value="c" disabled /> チェック C (無効)</label>
+            </div>
+
+            <div class="form-group">
+              <label for="textarea-field">テキストエリア:</label>
+              <textarea id="textarea-field" name="textarea_field" rows="4" cols="50" placeholder="複数行のテキスト">既存の内容\n2行目のテキスト</textarea>
+            </div>
+
+            <input type="hidden" name="hidden_field" value="hidden_value_123" />
+            <input type="hidden" name="csrf_token" value="test-csrf-token-abcdef" />
+          </fieldset>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="submit-btn">送信</button>
+            <button type="reset" class="btn btn-secondary">リセット</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- メディアセクション -->
+      <section id="section-media" class="section" data-type="media">
+        <h2>メディア要素</h2>
+
+        <figure class="figure">
+          <img src="/images/sample.jpg" alt="サンプル画像の代替テキスト" width="400" height="300" class="sample-image" loading="lazy" data-src="/images/sample-hd.jpg" />
+          <figcaption class="figcaption">図1: テスト用サンプル画像のキャプション</figcaption>
+        </figure>
+
+        <picture>
+          <source srcset="/images/sample-mobile.webp" type="image/webp" media="(max-width: 600px)" />
+          <source srcset="/images/sample-desktop.webp" type="image/webp" media="(min-width: 601px)" />
+          <img src="/images/sample-fallback.jpg" alt="レスポンシブ画像テスト" class="responsive-image" />
+        </picture>
+
+        <div class="iframe-wrapper">
+          <iframe src="/embed/test" title="埋め込みコンテンツのテスト" width="560" height="315" frameborder="0" allowfullscreen class="embed-frame" data-embed-id="embed-001"> </iframe>
+        </div>
+      </section>
+
+      <!-- ネスト・複雑構造セクション -->
+      <section id="section-nested" class="section" data-type="nested">
+        <h2>ネスト構造・複雑な要素</h2>
+
+        <!-- カード型レイアウト -->
+        <div class="card-container" id="cards">
+          <div class="card" data-card-id="card-1" data-status="active">
+            <div class="card-header">
+              <h4 class="card-title">カード 1</h4>
+              <span class="badge badge-success">アクティブ</span>
+            </div>
+            <div class="card-body">
+              <p>カードの本文テキスト。<a href="/cards/1">詳細はこちら</a></p>
+              <ul class="card-tags">
+                <li><span class="tag tag-primary">#タグ1</span></li>
+                <li><span class="tag tag-secondary">#タグ2</span></li>
+              </ul>
+            </div>
+            <div class="card-footer">
+              <small class="text-muted">最終更新: <time datetime="2026-06-01">2026年6月1日</time></small>
+            </div>
+          </div>
+          <div class="card" data-card-id="card-2" data-status="inactive">
+            <div class="card-header">
+              <h4 class="card-title">カード 2</h4>
+              <span class="badge badge-secondary">非アクティブ</span>
+            </div>
+            <div class="card-body">
+              <p>2枚目のカードの本文テキスト。</p>
+            </div>
+            <div class="card-footer">
+              <small class="text-muted">最終更新: <time datetime="2026-05-15">2026年5月15日</time></small>
+            </div>
+          </div>
+        </div>
+
+        <!-- ページネーション -->
+        <nav class="pagination" aria-label="ページネーション" role="navigation">
+          <a href="?page=1" class="page-link page-prev" aria-label="前のページ">&laquo; 前へ</a>
+          <a href="?page=1" class="page-link" aria-label="1ページ目">1</a>
+          <a href="?page=2" class="page-link page-current" aria-current="page" aria-label="現在: 2ページ目">2</a>
+          <a href="?page=3" class="page-link" aria-label="3ページ目">3</a>
+          <span class="page-ellipsis">...</span>
+          <a href="?page=10" class="page-link" aria-label="10ページ目">10</a>
+          <a href="?page=3" class="page-link page-next" aria-label="次のページ">次へ &raquo;</a>
+        </nav>
+
+        <!-- データ属性バリエーション -->
+        <div id="data-attributes-test">
+          <span data-id="1001" data-type="product" data-price="999" data-currency="JPY" data-available="true">データ属性テスト要素1</span>
+          <span data-id="1002" data-type="service" data-price="0" data-currency="JPY" data-available="false">データ属性テスト要素2</span>
+          <span data-json='{"key": "value", "num": 42, "arr": [1, 2, 3]}'>JSON data属性テスト</span>
+        </div>
+
+        <!-- 特殊文字・エンコーディングテスト -->
+        <div id="special-chars" class="encoding-test">
+          <p>HTML実体参照: &amp; &lt; &gt; &quot; &#39; &nbsp; &copy; &reg; &trade; &yen;</p>
+          <p>Unicode文字: 日本語テスト, 中文测试, 한국어 테스트, العربية, Ελληνικά</p>
+          <p>記号: ① ② ③ ★ ☆ ♠ ♥ ♦ ♣ → ← ↑ ↓</p>
+          <p>数学記号: ∑ ∫ √ π ∞ ≠ ≤ ≥ ±</p>
+        </div>
+
+        <!-- コメントノード (スクレイパーがコメントを取得できるかテスト) -->
+        <!-- TEST_COMMENT: このHTMLコメントはスクレイパーの検出テスト用です -->
+        <!-- DATA: {"hidden": true, "value": "comment-data-test"} -->
+
+        <!-- インラインJavaScript内のデータ -->
+        <script type="application/json" id="page-data">
+          {
+              "pageId": "loading-test-sample",
+              "items": [
+                  {"id": 1, "name": "Item A", "value": 100},
+                  {"id": 2, "name": "Item B", "value": 200},
+                  {"id": 3, "name": "Item C", "value": 300}
+              ],
+              "meta": {
+                  "total": 3,
+                  "generated": "2026-07-04T00:00:00Z"
+              }
+          }
+        </script>
+
+        <script>
+          // インラインスクリプト内の変数データ (一部のスクレイパーはこれを解析する)
+          var PAGE_CONFIG = {
+              apiEndpoint: "/api/v1/test",
+              maxItems: 50,
+              features: ["feature_a", "feature_b"],
+              debug: false
+          };
+          window.__INITIAL_STATE__ = {
+              user: null,
+              items: [],
+              loaded: false
+          };
+        </script>
+      </section>
+
+      <!-- 検索結果風レイアウト -->
+      <section id="section-search-results" class="section" data-type="search-results">
+        <h2>検索結果風レイアウト</h2>
+        <p class="results-summary">約 <strong>1,234</strong> 件の結果 (0.42秒)</p>
+
+        <ol class="search-results-list">
+          <li class="search-result-item" data-rank="1">
+            <h3 class="result-title"><a href="https://example.com/result/1" class="result-link">検索結果タイトル 1 - 最も関連性が高い</a></h3>
+            <cite class="result-url">https://example.com/result/1</cite>
+            <p class="result-snippet">この検索結果のスニペットテキストです。スクレイピングツールがタイトル、URL、スニペットを正しく<em>抽出</em>できるかテストします。</p>
+            <div class="result-meta">
+              <span class="result-date">2026年6月20日</span>
+              <span class="result-source">example.com</span>
+            </div>
+          </li>
+          <li class="search-result-item" data-rank="2">
+            <h3 class="result-title"><a href="https://example.com/result/2" class="result-link">検索結果タイトル 2 - 関連コンテンツ</a></h3>
+            <cite class="result-url">https://example.com/result/2</cite>
+            <p class="result-snippet">2件目の検索結果のスニペットです。複数の結果アイテムを正しくループ処理できるかテストします。</p>
+            <div class="result-meta">
+              <span class="result-date">2026年5月30日</span>
+              <span class="result-source">example.com</span>
+            </div>
+          </li>
+          <li class="search-result-item" data-rank="3">
+            <h3 class="result-title"><a href="https://example.com/result/3" class="result-link">検索結果タイトル 3</a></h3>
+            <cite class="result-url">https://example.com/result/3</cite>
+            <p class="result-snippet">3件目。タイトルにリンクが含まれない<strong>テキスト</strong>の場合も想定してテストします。</p>
+          </li>
+        </ol>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer id="main-footer" class="footer" role="contentinfo">
+      <div class="footer-content">
+        <p class="footer-text">&copy; 2026 <a href="https://hashin2425.github.io">hashin2425</a>. All rights reserved.</p>
+        <nav class="footer-nav" aria-label="フッターナビゲーション">
+          <a href="/privacy">プライバシーポリシー</a>
+          <a href="/terms">利用規約</a>
+          <a href="/contact">お問い合わせ</a>
+        </nav>
+        <p class="footer-meta">Page type: <span id="page-type">scraping-test-sample</span> | Version: <span id="page-version">1.0.0</span> | Generated: <time id="generated-time" datetime="2026-07-04T00:00:00Z">2026-07-04</time></p>
+      </div>
+    </footer>
+  </body>
+</html>
