@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Connectivity Check</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --bg: #f6f7f9;
+            --panel: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #d9dee8;
+            --ok: #16794c;
+            --warn: #946200;
+            --bad: #b42318;
+            --leaf: #2f7d32;
+            --button: #374151;
+            --button-current: #e5e7eb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            line-height: 1.5;
+        }
+
+        main {
+            width: 100%;
+            max-width: 430px;
+            min-height: 100vh;
+            margin: 0 auto;
+            padding: 16px 14px 92px;
+        }
+
+        header {
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            margin: 0 0 4px;
+            font-size: 22px;
+            line-height: 1.25;
+        }
+
+        p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        button {
+            flex: 1;
+            min-height: 44px;
+            border: 1px solid var(--button);
+            border-radius: 6px;
+            padding: 10px 14px;
+            background: var(--button);
+            color: #ffffff;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 600;
+        }
+
+        button.is-current {
+            border-color: var(--button-current);
+            background: var(--button-current);
+            color: var(--text);
+        }
+
+        .toolbar {
+            position: fixed;
+            bottom: max(14px, env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            width: min(402px, calc(100% - 28px));
+            gap: 8px;
+            align-items: center;
+            margin: 0 auto;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: 0 8px 24px rgba(31, 41, 55, 0.16);
+        }
+
+        .settings {
+            display: grid;
+            gap: 6px;
+            margin: 0 0 16px;
+        }
+
+        .settings label {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        select {
+            width: 100%;
+            min-height: 44px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--panel);
+            color: var(--text);
+            font: inherit;
+            padding: 8px 10px;
+        }
+
+        .summary {
+            width: 100%;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--panel);
+            margin-bottom: 16px;
+            font-size: 12px;
+        }
+
+        .summary th,
+        .summary td {
+            border-bottom: 1px solid var(--border);
+            padding: 7px 10px;
+            text-align: left;
+        }
+
+        .summary tr:last-child th,
+        .summary tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .summary th {
+            width: 42%;
+            background: #f3f4f6;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .summary td {
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .target-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .target-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--panel);
+            padding: 12px;
+        }
+
+        .target-head {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .target-url {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        a {
+            color: var(--leaf);
+            overflow-wrap: anywhere;
+        }
+
+        .switch {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 700;
+            user-select: none;
+        }
+
+        .switch input {
+            width: 22px;
+            height: 22px;
+            margin: 0;
+        }
+
+        .status {
+            display: inline-flex;
+            min-width: 86px;
+            justify-content: center;
+            border-radius: 999px;
+            padding: 3px 10px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .history {
+            margin-bottom: 12px;
+        }
+
+        .history-head {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .timeline {
+            display: grid;
+            grid-template-columns: repeat(60, minmax(0, 1fr));
+            gap: 1px;
+            height: 34px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--border);
+        }
+
+        .timeline-bar {
+            min-width: 0;
+            background: #f3f4f6;
+        }
+
+        .timeline-bar.ok {
+            background: #22c55e;
+        }
+
+        .timeline-bar.bad {
+            background: #ef4444;
+        }
+
+        .legend {
+            display: flex;
+            gap: 10px;
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .legend span {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .legend span::before {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            content: "";
+        }
+
+        .legend .ok::before {
+            background: #22c55e;
+        }
+
+        .legend .bad::before {
+            background: #ef4444;
+        }
+
+        .legend .empty::before {
+            border: 1px solid var(--border);
+            background: #f3f4f6;
+        }
+
+        .details {
+            display: grid;
+            gap: 8px;
+        }
+
+        .detail {
+            display: flex;
+            gap: 10px;
+            align-items: baseline;
+            justify-content: space-between;
+            border-top: 1px solid var(--border);
+            padding-top: 8px;
+        }
+
+        .detail span:first-child {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .detail span:last-child {
+            min-width: 0;
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
+
+        .status.ok {
+            background: #dcfce7;
+            color: var(--ok);
+        }
+
+        .status.pending {
+            background: #fef3c7;
+            color: var(--warn);
+        }
+
+        .status.bad {
+            background: #fee4e2;
+            color: var(--bad);
+        }
+
+        .status.off {
+            background: #e5e7eb;
+            color: #4b5563;
+        }
+
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <header>
+            <div>
+                <h1>URL Connectivity Check</h1>
+                <p>有効なURLを設定した間隔で順番に確認します。</p>
+            </div>
+            <div class="toolbar">
+                <button id="startButton" type="button">開始</button>
+                <button id="stopButton" type="button">停止</button>
+            </div>
+        </header>
+
+        <section class="settings" aria-label="settings">
+            <label for="intervalSelect">確認間隔</label>
+            <select id="intervalSelect">
+                <option value="200">0.2秒</option>
+                <option value="1000">1秒</option>
+                <option value="5000">5秒</option>
+                <option value="10000">10秒</option>
+                <option value="60000">60秒</option>
+            </select>
+        </section>
+
+        <table class="summary" aria-label="summary">
+            <tbody>
+                <tr>
+                    <th scope="row">有効URL</th>
+                    <td id="activeCount">0</td>
+                </tr>
+                <tr>
+                    <th scope="row">確認回数</th>
+                    <td id="totalChecks">0</td>
+                </tr>
+                <tr>
+                    <th scope="row">応答あり</th>
+                    <td id="okChecks">0</td>
+                </tr>
+                <tr>
+                    <th scope="row">エラー</th>
+                    <td id="errorChecks">0</td>
+                </tr>
+                <tr>
+                    <th scope="row">累積通信量</th>
+                    <td id="totalBytes">0 B</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <section id="targetRows" class="target-list" aria-label="target urls"></section>
+    </main>
+
+    <script>
+        const CONFIG = {
+            timeoutMs: 3000,
+            historyMs: 10 * 60 * 1000,
+            historyBuckets: 60,
+            storageKey: "connectivity-check-analytics-v1"
+        };
+
+        const TARGETS = [
+            { url: "https://hashin.net/loading-test-sample-html/size-10b.html", enabled: true, bytes: 10 },
+            { url: "https://hashin.net/loading-test-sample-html/size-1kb.html", enabled: false, bytes: 1000 },
+            { url: "https://hashin.net/loading-test-sample-html/size-1mb.html", enabled: false, bytes: 1000000 },
+            { url: "https://hashin.net/loading-test-sample-html/sample.html", enabled: false, bytes: 20843 }
+        ];
+
+        const dom = {
+            rows: document.getElementById("targetRows"),
+            startButton: document.getElementById("startButton"),
+            stopButton: document.getElementById("stopButton"),
+            intervalSelect: document.getElementById("intervalSelect"),
+            summary: {
+                activeCount: document.getElementById("activeCount"),
+                totalChecks: document.getElementById("totalChecks"),
+                okChecks: document.getElementById("okChecks"),
+                errorChecks: document.getElementById("errorChecks"),
+                totalBytes: document.getElementById("totalBytes")
+            }
+        };
+
+        const state = {
+            running: true,
+            intervalMs: Number(dom.intervalSelect.value),
+            cursor: 0,
+            timerId: null,
+            targets: TARGETS.map(createTarget)
+        };
+
+        function createTarget(config) {
+            return {
+                ...config,
+                status: "pending",
+                checks: 0,
+                ok: 0,
+                errors: 0,
+                totalDurationMs: 0,
+                transferredBytes: 0,
+                history: [],
+                lastSuccessAt: "-",
+                lastDuration: "-",
+                estimatedSpeed: "-",
+                lastError: "-"
+            };
+        }
+
+        function toNumber(value, fallback = 0) {
+            const number = Number(value);
+            return Number.isFinite(number) ? number : fallback;
+        }
+
+        function escapeHtml(value) {
+            const replacements = {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                "\"": "&quot;",
+                "'": "&#39;"
+            };
+            return String(value).replace(/[&<>"']/g, (character) => replacements[character]);
+        }
+
+        function isTargetStatus(value) {
+            return ["ok", "bad", "pending"].includes(value);
+        }
+
+        function statusLabel(status, enabled) {
+            if (!enabled) return "停止中";
+            if (status === "ok") return "応答あり";
+            if (status === "bad") return "エラー";
+            return "待機中";
+        }
+
+        function formatSpeed(bytes, durationMs) {
+            if (bytes === 0 || durationMs <= 0) {
+                return "-";
+            }
+
+            const bitsPerSecond = bytes * 8 / (durationMs / 1000);
+            if (bitsPerSecond >= 1000000) {
+                return `${(bitsPerSecond / 1000000).toFixed(2)} Mbps`;
+            }
+            if (bitsPerSecond >= 1000) {
+                return `${(bitsPerSecond / 1000).toFixed(1)} Kbps`;
+            }
+            return `${Math.round(bitsPerSecond)} bps`;
+        }
+
+        function formatBytes(bytes) {
+            if (bytes >= 1000000) {
+                return `${(bytes / 1000000).toFixed(2)} MB`;
+            }
+            if (bytes >= 1000) {
+                return `${(bytes / 1000).toFixed(1)} KB`;
+            }
+            return `${bytes} B`;
+        }
+
+        function pruneHistory(target) {
+            const threshold = Date.now() - CONFIG.historyMs;
+            target.history = target.history.filter((entry) => entry.time >= threshold);
+        }
+
+        function sanitizeHistory(history) {
+            if (!Array.isArray(history)) {
+                return [];
+            }
+
+            return history
+                .map((entry) => ({
+                    time: toNumber(entry && entry.time),
+                    status: entry && entry.status === "bad" ? "bad" : "ok"
+                }))
+                .filter((entry) => entry.time > 0);
+        }
+
+        function serializeTarget(target) {
+            return {
+                url: target.url,
+                enabled: target.enabled,
+                status: target.status,
+                checks: target.checks,
+                ok: target.ok,
+                errors: target.errors,
+                totalDurationMs: target.totalDurationMs,
+                transferredBytes: target.transferredBytes,
+                history: target.history,
+                lastSuccessAt: target.lastSuccessAt,
+                lastDuration: target.lastDuration,
+                lastError: target.lastError
+            };
+        }
+
+        function saveAnalytics() {
+            const analytics = state.targets.map(serializeTarget);
+
+            try {
+                localStorage.setItem(CONFIG.storageKey, JSON.stringify(analytics));
+            } catch (error) {
+                console.warn("Unable to save analytics.", error);
+            }
+        }
+
+        function applyStoredAnalytics(target, stored) {
+            if (typeof stored.enabled === "boolean") {
+                target.enabled = stored.enabled;
+            }
+
+            target.status = isTargetStatus(stored.status) ? stored.status : "pending";
+            target.checks = toNumber(stored.checks);
+            target.ok = toNumber(stored.ok);
+            target.errors = toNumber(stored.errors);
+            target.totalDurationMs = toNumber(stored.totalDurationMs);
+            target.transferredBytes = toNumber(stored.transferredBytes);
+            target.history = sanitizeHistory(stored.history);
+            target.lastSuccessAt = stored.lastSuccessAt || "-";
+            target.lastDuration = stored.lastDuration || "-";
+            target.lastError = stored.lastError || "-";
+            target.estimatedSpeed = formatSpeed(target.transferredBytes, target.totalDurationMs);
+            pruneHistory(target);
+        }
+
+        function restoreAnalytics() {
+            let analytics = [];
+
+            try {
+                analytics = JSON.parse(localStorage.getItem(CONFIG.storageKey) || "[]");
+            } catch (error) {
+                console.warn("Unable to restore analytics.", error);
+                return;
+            }
+
+            if (!Array.isArray(analytics)) {
+                return;
+            }
+
+            state.targets.forEach((target) => {
+                const stored = analytics.find((entry) => entry && entry.url === target.url);
+                if (stored) {
+                    applyStoredAnalytics(target, stored);
+                }
+            });
+        }
+
+        function getTotals() {
+            return state.targets.reduce((memo, target) => {
+                memo.active += target.enabled ? 1 : 0;
+                memo.checks += target.checks;
+                memo.ok += target.ok;
+                memo.errors += target.errors;
+                memo.bytes += target.transferredBytes;
+                return memo;
+            }, { active: 0, checks: 0, ok: 0, errors: 0, bytes: 0 });
+        }
+
+        function renderSummary() {
+            const totals = getTotals();
+
+            dom.summary.activeCount.textContent = totals.active;
+            dom.summary.totalChecks.textContent = totals.checks;
+            dom.summary.okChecks.textContent = totals.ok;
+            dom.summary.errorChecks.textContent = totals.errors;
+            dom.summary.totalBytes.textContent = formatBytes(totals.bytes);
+        }
+
+        function renderControls() {
+            dom.startButton.classList.toggle("is-current", state.running);
+            dom.stopButton.classList.toggle("is-current", !state.running);
+            dom.startButton.textContent = state.running ? "動作中" : "開始する";
+            dom.stopButton.textContent = state.running ? "停止する" : "停止中";
+        }
+
+        function timelineBars(target) {
+            const now = Date.now();
+            const bucketMs = CONFIG.historyMs / CONFIG.historyBuckets;
+            const buckets = Array.from({ length: CONFIG.historyBuckets }, () => "");
+
+            target.history.forEach((entry) => {
+                const elapsed = now - entry.time;
+                if (elapsed < 0 || elapsed >= CONFIG.historyMs) {
+                    return;
+                }
+
+                const bucketIndex = CONFIG.historyBuckets - 1 - Math.floor(elapsed / bucketMs);
+                const current = buckets[bucketIndex];
+                if (entry.status === "bad" || current !== "bad") {
+                    buckets[bucketIndex] = entry.status;
+                }
+            });
+
+            return buckets
+                .map((status) => `<span class="timeline-bar ${status}" aria-hidden="true"></span>`)
+                .join("");
+        }
+
+        function renderTargetCard(target, index) {
+            const statusClass = target.enabled ? target.status : "off";
+            const checked = target.enabled ? "checked" : "";
+
+            return `
+                <article class="target-card">
+                    <div class="target-head">
+                        <label class="switch">
+                            <input type="checkbox" ${checked} data-index="${index}">
+                            <span>${target.enabled ? "オン" : "オフ"}</span>
+                        </label>
+                        <span class="status ${statusClass}">${statusLabel(target.status, target.enabled)}</span>
+                    </div>
+                    <a class="target-url" href="${target.url}" target="_blank" rel="noopener">${target.url}</a>
+                    <div class="history" aria-label="直近10分の状態">
+                        <div class="history-head">
+                            <span>10分前</span>
+                            <span>直近10分</span>
+                            <span>現在</span>
+                        </div>
+                        <div class="timeline">${timelineBars(target)}</div>
+                        <div class="legend" aria-hidden="true">
+                            <span class="ok">成功</span>
+                            <span class="bad">エラー</span>
+                            <span class="empty">記録なし</span>
+                        </div>
+                    </div>
+                    <div class="details">
+                        <div class="detail">
+                            <span>回数</span>
+                            <span class="mono">${target.checks}</span>
+                        </div>
+                        <div class="detail">
+                            <span>最終疎通時刻</span>
+                            <span class="mono">${escapeHtml(target.lastSuccessAt)}</span>
+                        </div>
+                        <div class="detail">
+                            <span>通信時間</span>
+                            <span class="mono">${escapeHtml(target.lastDuration)}</span>
+                        </div>
+                        <div class="detail">
+                            <span>推定通信速度</span>
+                            <span class="mono">${escapeHtml(target.estimatedSpeed)}</span>
+                        </div>
+                        <div class="detail">
+                            <span>エラー</span>
+                            <span>${escapeHtml(target.lastError)}</span>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderRows() {
+            state.targets.forEach(pruneHistory);
+            dom.rows.innerHTML = state.targets.map(renderTargetCard).join("");
+        }
+
+        function render() {
+            renderRows();
+            renderSummary();
+            renderControls();
+        }
+
+        function recordSuccess(target) {
+            target.status = "ok";
+            target.ok += 1;
+            target.transferredBytes += target.bytes;
+            target.lastSuccessAt = new Date().toLocaleTimeString();
+        }
+
+        function recordError(target, error) {
+            target.status = "bad";
+            target.errors += 1;
+            target.lastError = error.name === "AbortError" ? "timeout" : error.message;
+        }
+
+        function completeCheck(target, started, timeoutId) {
+            const durationMs = performance.now() - started;
+            clearTimeout(timeoutId);
+
+            target.checks += 1;
+            target.totalDurationMs += durationMs;
+            if (target.status === "ok") {
+                target.lastDuration = `${Math.round(durationMs)}ms`;
+            }
+
+            target.history.push({
+                time: Date.now(),
+                status: target.status
+            });
+            pruneHistory(target);
+            target.estimatedSpeed = formatSpeed(target.transferredBytes, target.totalDurationMs);
+        }
+
+        async function checkTarget(target) {
+            const started = performance.now();
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), CONFIG.timeoutMs);
+
+            target.status = "pending";
+            target.lastError = "-";
+            render();
+
+            try {
+                await fetch(`${target.url}?_=${Date.now()}`, {
+                    cache: "no-store",
+                    mode: "no-cors",
+                    signal: controller.signal
+                });
+                recordSuccess(target);
+            } catch (error) {
+                recordError(target, error);
+            } finally {
+                completeCheck(target, started, timeoutId);
+                saveAnalytics();
+                render();
+            }
+        }
+
+        function nextEnabledTarget() {
+            if (!state.targets.some((target) => target.enabled)) {
+                return null;
+            }
+
+            for (let i = 0; i < state.targets.length; i += 1) {
+                const index = state.cursor % state.targets.length;
+                state.cursor += 1;
+                if (state.targets[index].enabled) {
+                    return state.targets[index];
+                }
+            }
+
+            return null;
+        }
+
+        function tick() {
+            if (!state.running) {
+                return;
+            }
+
+            const target = nextEnabledTarget();
+            if (target) {
+                checkTarget(target);
+            }
+        }
+
+        function restartTimer() {
+            if (state.timerId) {
+                clearInterval(state.timerId);
+            }
+
+            state.timerId = setInterval(tick, state.intervalMs);
+            if (state.running) {
+                tick();
+            }
+        }
+
+        function setRunning(running) {
+            state.running = running;
+            render();
+        }
+
+        function handleTargetToggle(event) {
+            const input = event.target;
+            if (!(input instanceof HTMLInputElement) || input.dataset.index === undefined) {
+                return;
+            }
+
+            const target = state.targets[Number(input.dataset.index)];
+            if (!target) {
+                return;
+            }
+
+            target.enabled = input.checked;
+            if (!target.enabled) {
+                target.status = "pending";
+                target.lastError = "-";
+            }
+
+            saveAnalytics();
+            render();
+        }
+
+        function handleIntervalChange() {
+            state.intervalMs = Number(dom.intervalSelect.value);
+            restartTimer();
+        }
+
+        dom.rows.addEventListener("change", handleTargetToggle);
+        dom.startButton.addEventListener("click", () => setRunning(true));
+        dom.stopButton.addEventListener("click", () => setRunning(false));
+        dom.intervalSelect.addEventListener("change", handleIntervalChange);
+
+        restoreAnalytics();
+        render();
+        restartTimer();
+    </script>
+</body>
+</html>
